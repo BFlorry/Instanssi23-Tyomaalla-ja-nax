@@ -17,7 +17,7 @@ public class LightController : MonoBehaviour
     int PORTNUM = 9909;
 
     // Paketin lähettäjä
-    string USER = "BFlorryNot3";
+    string USER = "BFlor";
 
     Socket sock;
 
@@ -50,6 +50,15 @@ public class LightController : MonoBehaviour
     [SerializeField]
     private float flashDownWait = 0.05f;
 
+    private int curLight = 0;
+
+    private int lightNumber = 0;
+
+    [SerializeField]
+    private DemoController demoController;
+
+    private int coneCount;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -68,7 +77,7 @@ public class LightController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        coneCount = demoController.GetConeCount();
         
         if(Input.GetKeyDown(KeyCode.Space))
         {
@@ -117,6 +126,12 @@ public class LightController : MonoBehaviour
             
         }
 
+        if(Input.GetKeyDown(KeyCode.Keypad6))
+        {
+            StartCoroutine(FlashLights(FlashType.ALTRIGHT, new Color32(255, 255, 255, 0)));
+            
+        }
+
         if(Input.GetKeyDown(KeyCode.Q))
         {
             StartCoroutine(FlashLights(FlashType.CLOCKWISE, new Color32(255, 255, 255, 0)));
@@ -128,11 +143,17 @@ public class LightController : MonoBehaviour
             StartCoroutine(FlashLights(FlashType.COUNTERCLOCKWISE, new Color32(255, 255, 255, 0)));
             
         }
+
+        if(Input.GetKeyDown(KeyCode.KeypadEnter)){
+            StartCoroutine(FlashSingleLight(curLight, new Color32(255, 255, 255, 0)));
+            curLight = curLight + 1;
+            if(curLight > NUM_LIGHTS) curLight = 0;
+        }
     }
 
     void SendPacket(){
         Debug.Log($"[{string.Join(",", packet.ToArray())}]");
-        if (enableSending && packet != defaultPacket){
+        if (enableSending/* && packet != defaultPacket*/){
             sock.SendTo(packet.ToArray(), endPoint);
         }
         ResetPacket();
@@ -150,13 +171,15 @@ public class LightController : MonoBehaviour
         packet.Add(1); // Spex version is always 1
         packet.Add(0); // Begin name tag
 
-        byte[] name = Encoding.ASCII.GetBytes(USER);
-        
+        byte[] name = Encoding.ASCII.GetBytes(USER + lightNumber);
+        lightNumber = lightNumber + 1;
         packet.AddRange(name);
 
         packet.Add(0); // End name tag
 
         //Debug.Log($"Packet resetted: [{string.Join(",", packet.ToArray())}]");
+
+        if(lightNumber > 999) lightNumber = 0;
     }
 
     void SetPacket(int i, int r, int g, int b){
@@ -179,7 +202,9 @@ public class LightController : MonoBehaviour
         LEFT,
         RIGHT,
         CLOCKWISE,
-        COUNTERCLOCKWISE
+        COUNTERCLOCKWISE,
+        ALTRIGHT,
+        PINGPONG
     }
 
     
@@ -188,7 +213,9 @@ public class LightController : MonoBehaviour
         switch (flashType)
         {
             case FlashType.ALL:
-                    for (int i = 0; i <= flashUpSpeed; i++)
+                    demoController.PulseSizeAll(3);
+                    //StopAllCoroutines();
+                    for (int i = 0; i <= flashUpSpeed/2; i++)
                     {
                         float brightness = i * 0.1f;
                         for (int u = 0; u < NUM_LIGHTS - 2; u++)
@@ -200,7 +227,7 @@ public class LightController : MonoBehaviour
                         yield return new WaitForSeconds(minWaitTime);
                     }
 
-                    for (int i = flashUpSpeed; i >= 0; i--)
+                    for (int i = flashUpSpeed/2; i >= 0; i--)
                     {
                         //TODO: laita flashDownWait odotusaika kaikkiin flashdownspeed kohtiin ja laita tilale flashupspeed
                         float brightness = i * 0.01f;
@@ -214,24 +241,27 @@ public class LightController : MonoBehaviour
                     }
                     break;
             case FlashType.LEFT:
+                    demoController.PulseSizeHalf(3, false);
                     for (int i = 0; i <= flashUpSpeed; i++)
                     {
                         float brightness = i * 0.1f;
-                        for (int u = 0; u < NUM_LIGHTS/2 - 1; u++)
+                        for (int u = 0; u < NUM_LIGHTS - 2; u++)
                         {
-                            SetPacket(u, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
+                            if(u > NUM_LIGHTS/2 - 1) SetPacket(u, Mathf.RoundToInt(0), Mathf.RoundToInt(0), Mathf.RoundToInt(0));
+                            else SetPacket(u, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
                             
                         }
                         SendPacket();
                         yield return new WaitForSeconds(minWaitTime);
                     }
 
-                    for (int i = NUM_LIGHTS/2 - 1; i >= 0; i--)
+                    for (int i = NUM_LIGHTS - 2; i >= 0; i--)
                     {
                         float brightness = i * 0.01f;
                         for (int u = 0; u < NUM_LIGHTS/2 - 1; u++)
                         {
-                            SetPacket(u, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
+                            if(u > NUM_LIGHTS/2 - 1) SetPacket(u, Mathf.RoundToInt(0), Mathf.RoundToInt(0), Mathf.RoundToInt(0));
+                            else SetPacket(u, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
                             
                         }
                         SendPacket();
@@ -239,12 +269,14 @@ public class LightController : MonoBehaviour
                     }
                     break;
             case FlashType.RIGHT:
+                    demoController.PulseSizeHalf(3, true);
                     for (int i = 0; i <= flashUpSpeed; i++)
                     {
                         float brightness = i * 0.1f;
-                        for (int u = NUM_LIGHTS/2 - 1; u < NUM_LIGHTS - 2; u++)
+                        for (int u = 0; u < NUM_LIGHTS - 2; u++)
                         {
-                            SetPacket(u, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
+                            if(u < NUM_LIGHTS/2 - 1) SetPacket(u, Mathf.RoundToInt(0), Mathf.RoundToInt(0), Mathf.RoundToInt(0));
+                            else SetPacket(u, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
                             
                         }
                         SendPacket();
@@ -254,9 +286,10 @@ public class LightController : MonoBehaviour
                     for (int i = flashUpSpeed; i >= 0; i--)
                     {
                         float brightness = i * 0.01f;
-                        for (int u = NUM_LIGHTS/2 - 1; u < NUM_LIGHTS - 2; u++)
+                        for (int u = 0; u < NUM_LIGHTS - 2; u++)
                         {
-                            SetPacket(u, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
+                            if(u < NUM_LIGHTS/2 - 1) SetPacket(u, Mathf.RoundToInt(0), Mathf.RoundToInt(0), Mathf.RoundToInt(0));
+                            else SetPacket(u, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
                             
                         }
                         SendPacket();
@@ -267,6 +300,7 @@ public class LightController : MonoBehaviour
                     for (int i = NUM_LIGHTS - 1; i > 0; i--)
                     {
                         StartCoroutine(FlashSingleLight(i, color));
+                        demoController.PulseSize(new int[]{i % coneCount}, 3);
                         yield return new WaitForSeconds(circleWaitTime);
                         
                     }
@@ -275,10 +309,46 @@ public class LightController : MonoBehaviour
                     for (int i = 0; i < NUM_LIGHTS; i++)
                     {
                         StartCoroutine(FlashSingleLight(i, color));
+                        demoController.PulseSize(new int[]{i % coneCount}, 3);
                         yield return new WaitForSeconds(circleWaitTime);
                         
                     }
                     break;
+            case FlashType.ALTRIGHT:
+                    for (int i = 0; i <= flashUpSpeed; i++)
+                    {
+                        float brightness = i * 0.1f;
+                        for (int u = 0; u < NUM_LIGHTS - 2; u++)
+                        {
+                            if(u > 10) SetPacket(u, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
+                            else SetPacket(u, Mathf.RoundToInt(0), Mathf.RoundToInt(0), Mathf.RoundToInt(0));
+                            
+                        }
+                        SendPacket();
+                        yield return new WaitForSeconds(minWaitTime);
+                    }
+
+                    for (int i = flashUpSpeed; i >= 0; i--)
+                    {
+                        //TODO: laita flashDownWait odotusaika kaikkiin flashdownspeed kohtiin ja laita tilale flashupspeed
+                        float brightness = i * 0.01f;
+                        for (int u = 0; u < NUM_LIGHTS - 2; u++)
+                        {
+                            if(u > 10) SetPacket(u, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
+                            else SetPacket(u, Mathf.RoundToInt(0), Mathf.RoundToInt(0), Mathf.RoundToInt(0));
+                            
+                        }
+                        SendPacket();
+                        yield return new WaitForSeconds(flashDownWait);
+                    }
+                    break;
+            /*case FlashType.PINGPONG:
+                    SetPacket(u, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
+                            
+                        
+                    SendPacket();
+                    yield return new WaitForSeconds(minWaitTime);
+                    break;*/
             default:
                     yield return new WaitForSeconds(0);
                     break;
@@ -288,19 +358,80 @@ public class LightController : MonoBehaviour
         for (int i = 0; i <= flashUpSpeed; i++)
         {
             float brightness = i * 0.1f;
-            SetPacket(index, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
-                
+            for (int u = 0; u < NUM_LIGHTS; u++)
+            {
+                if(u == index) SetPacket(index, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
+                else SetLightOff(u);
+            }
             SendPacket();
+            demoController.PulseSize(new int[]{i % coneCount}, 3);
             yield return new WaitForSeconds(minWaitTime);
         }
 
         for (int i = flashUpSpeed; i >= 0; i--)
         {
             float brightness = i * 0.01f;
-            SetPacket(index, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
-                
+            for (int u = 0; u < NUM_LIGHTS; u++)
+            {
+                if(u == index) SetPacket(index, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
+                else SetLightOff(u);
+            }
             SendPacket();
             yield return new WaitForSeconds(flashDownWait);
         }
+    }
+
+    private IEnumerator SimpleFlashSingle(int index, Color32 color){
+        SetPacket(index, color.r, color.g, color.b);
+        SendPacket();
+        yield return new WaitForSeconds(flashDownWait);
+        SetPacket(index, 0, 0, 0);
+        SendPacket();
+    }
+
+    public void ClearAllLights()
+        {
+            StartCoroutine(FlashLights(FlashType.ALL, new Color32(0, 0, 0, 0)));
+            
+        }
+
+    public void FlashAllLights()
+        {
+            StartCoroutine(FlashLights(FlashType.ALL, new Color32(255, 255, 255, 0)));
+            
+        }
+
+    public void FlashLeftLights()
+        {
+            StartCoroutine(FlashLights(FlashType.LEFT, new Color32(255, 255, 255, 0)));
+            
+        }
+
+    public void FlashRightLights()
+        {
+            StartCoroutine(FlashLights(FlashType.RIGHT, new Color32(255, 255, 255, 0)));
+            
+        }
+
+    public void FlashAllClockwise()
+        {
+            StartCoroutine(FlashLights(FlashType.CLOCKWISE, new Color32(255, 255, 255, 0)));
+            
+        }
+
+    public void FlashAllCounterclockwise()
+        {
+            StartCoroutine(FlashLights(FlashType.COUNTERCLOCKWISE, new Color32(255, 255, 255, 0)));
+            
+        }
+
+    public void SimpleFlashSingle(int index)
+        {
+            //StartCoroutine(SimpleFlashSingle(index, new Color32(255, 255, 255, 0)));
+            StartCoroutine(FlashSingleLight(index, new Color32(255, 255, 255, 0)));
+        }
+
+    private void SetLightOff(int index){
+        SetPacket(index, Mathf.RoundToInt(0), Mathf.RoundToInt(0), Mathf.RoundToInt(0));
     }
 }
