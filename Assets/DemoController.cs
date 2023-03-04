@@ -10,6 +10,12 @@ public class DemoController : MonoBehaviour
     [SerializeField]
     private GameObject crabObject;
 
+    [SerializeField]
+    private GameObject hatObject;
+
+    [SerializeField]
+    private GameObject drillObject;
+
     private List<GameObject> cones;
 
     private List<GameObject> crabs;
@@ -38,6 +44,10 @@ public class DemoController : MonoBehaviour
 
     public void CreateNewCone(){
         cones.Add(Instantiate(coneObject));
+    }
+
+    public void CreateNewHat(){
+        cones.Add(Instantiate(hatObject));
     }
 
     public void CreateNewCrab(){
@@ -100,7 +110,7 @@ public class DemoController : MonoBehaviour
         if(coneCount > 0){
             for (int i = 0; i < coneCount; i++)
             {
-                float angle = (i + 1) * Mathf.PI * 2f / coneCount;
+                float angle = (i + 1) * Mathf.PI * 2f / (coneCount);
 
                 if(cones[i].transform.localScale.magnitude > new Vector3(1, 1, 1).magnitude){
                         cones[i].transform.localScale = Vector3.Lerp(cones[i].transform.localScale, new Vector3(1, 1, 1), Time.deltaTime * 3f);
@@ -109,13 +119,13 @@ public class DemoController : MonoBehaviour
                 if(curEffect == DemoEffect.SINCIRCLE){
                 
                     
-                    Vector3 newPos = new Vector3(Mathf.Cos(angle * Time.realtimeSinceStartup * timeFactor) * coneCount, Mathf.Sin(angle * Time.realtimeSinceStartup * timeFactor) * coneCount, Mathf.Sin(backAndForthMultiplier * angle)) * 0.8f;
+                    Vector3 newPos = new Vector3(Mathf.Cos(angle * Time.realtimeSinceStartup * timeFactor) * coneCount, Mathf.Sin(angle * Time.realtimeSinceStartup * timeFactor) * coneCount, Mathf.Sin(backAndForthMultiplier * angle)) * 0.6f;
                     cones[i].transform.position = newPos;
                     cones[i].transform.Rotate(new Vector3(Mathf.Cos(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)), Mathf.Sin( angle * Time.realtimeSinceStartup * timeFactor), Mathf.Sin(angle * Time.realtimeSinceStartup * timeFactor)) * rotationMultiplier);
 
                 }
                 else if(curEffect == DemoEffect.CIRCLE){
-                    Vector3 newPos = new Vector3(Mathf.Cos(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)) * coneCount, Mathf.Sin(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)) * coneCount, Mathf.Sin(backAndForthMultiplier * angle)) * 0.8f;
+                    Vector3 newPos = new Vector3(Mathf.Cos(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)) * coneCount, Mathf.Sin(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)) * coneCount, Mathf.Sin(backAndForthMultiplier * angle)) * 0.6f;
                     cones[i].transform.position = newPos;
                     //cones[i].transform.Rotate(new Vector3(Mathf.Cos(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)), Mathf.Sin( angle * Time.realtimeSinceStartup * timeFactor), Mathf.Sin(angle * Time.realtimeSinceStartup * timeFactor)) * rotationMultiplier);
 
