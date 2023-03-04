@@ -1247,7 +1247,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fakeLightController: {fileID: 169011234}
-  enableSending: 0
+  enableSending: 1
   minWaitTime: 0.025
   circleWaitTime: 0.075
   flashUpSpeed: 5
@@ -1569,7 +1569,7 @@ MonoBehaviour:
   coneObject: {fileID: 3903123001796460221, guid: 36877bc7248486843befe8a774d30dd6, type: 3}
   crabObject: {fileID: 5702866399106078416, guid: 5a16e2dcd46b8bd49a5590d5a6e2bec0, type: 3}
   hatObject: {fileID: 7362372683861701698, guid: 01e2b8b6de7101d49b12ee67ed13bc1c, type: 3}
-  drillObject: {fileID: 9047090665483596977, guid: b9107849a38e2ae4ba7fb5961161a034, type: 3}
+  drillObject: {fileID: 7170516553009751730, guid: c592a2363bca225489073ebde65a943f, type: 3}
   timeFactor: 0.3
 --- !u!1 &647484893
 GameObject:
