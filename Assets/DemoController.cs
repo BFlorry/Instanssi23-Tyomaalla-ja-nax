@@ -92,6 +92,10 @@ public class DemoController : MonoBehaviour
             PulseSize(ints, 3);
         }
 
+        if(Input.GetKeyDown(KeyCode.Escape)){
+            ExitDemo();
+        }
+
         int coneCount = cones.Count;
         if(coneCount > 0){
             for (int i = 0; i < coneCount; i++)
