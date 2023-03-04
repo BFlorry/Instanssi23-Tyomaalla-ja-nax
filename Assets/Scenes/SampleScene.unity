@@ -1299,6 +1299,8 @@ MonoBehaviour:
     - {fileID: 11400000, guid: 6d7efc46d0c2279429d59ec05721ed55, type: 2}
     - {fileID: 11400000, guid: b5d308458a825714e86611d1d60e6b16, type: 2}
     - {fileID: 11400000, guid: be68a7089dcdc104a9e9ed1d90edec30, type: 2}
+    - {fileID: 11400000, guid: 5bc61d9ffebe8cd4ea579f2aa7ea92fe, type: 2}
+    - {fileID: 11400000, guid: 2da60cf7d5615e0489d02beef8492426, type: 2}
     m_Events:
     - m_PersistentCalls:
         m_Calls:
@@ -1524,6 +1526,34 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 626328579}
+          m_TargetAssemblyTypeName: DemoController, Assembly-CSharp
+          m_MethodName: CreateNewDrill
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+    - m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 626328579}
+          m_TargetAssemblyTypeName: DemoController, Assembly-CSharp
+          m_MethodName: RemoveDrills
+          m_Mode: 1
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
 --- !u!114 &626328579
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1539,7 +1569,7 @@ MonoBehaviour:
   coneObject: {fileID: 3903123001796460221, guid: 36877bc7248486843befe8a774d30dd6, type: 3}
   crabObject: {fileID: 5702866399106078416, guid: 5a16e2dcd46b8bd49a5590d5a6e2bec0, type: 3}
   hatObject: {fileID: 7362372683861701698, guid: 01e2b8b6de7101d49b12ee67ed13bc1c, type: 3}
-  drillObject: {fileID: 0}
+  drillObject: {fileID: 9047090665483596977, guid: b9107849a38e2ae4ba7fb5961161a034, type: 3}
   timeFactor: 0.3
 --- !u!1 &647484893
 GameObject:

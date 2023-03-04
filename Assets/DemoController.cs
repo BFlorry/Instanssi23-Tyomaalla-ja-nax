@@ -20,6 +20,8 @@ public class DemoController : MonoBehaviour
 
     private List<GameObject> crabs;
 
+    private List<GameObject> drills;
+
     private float backAndForthMultiplier = 0;
     private float rotationMultiplier = 1;
     [SerializeField]
@@ -39,7 +41,7 @@ public class DemoController : MonoBehaviour
     {
         cones = new List<GameObject>();
         crabs = new List<GameObject>();
-        //cones.Add(Instantiate(coneObject));
+        drills = new List<GameObject>();
     }
 
     public void CreateNewCone(){
@@ -52,6 +54,10 @@ public class DemoController : MonoBehaviour
 
     public void CreateNewCrab(){
         crabs.Add(Instantiate(crabObject));
+    }
+
+    public void CreateNewDrill(){
+        drills.Add(Instantiate(drillObject));
     }
 
     public void ChangeDemoEffect(DemoEffect effect, bool forCrabs = false){
@@ -147,22 +153,57 @@ public class DemoController : MonoBehaviour
                         crabs[i].transform.localScale = Vector3.Lerp(crabs[i].transform.localScale, new Vector3(1, 1, 1), Time.deltaTime * 3f);
                 }
 
-                if(curEffect == DemoEffect.SINCIRCLE){
+                if(curCrabEffect == DemoEffect.SINCIRCLE){
                 
                     Vector3 newPos = new Vector3(Mathf.Cos(angle * Time.realtimeSinceStartup * timeFactor) * crabCount, Mathf.Sin(angle * Time.realtimeSinceStartup * timeFactor) * crabCount, Mathf.Sin(backAndForthMultiplier * angle)) * 0.8f;
                     crabs[i].transform.position = newPos;
                     crabs[i].transform.Rotate(new Vector3(Mathf.Cos(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)), Mathf.Sin( angle * Time.realtimeSinceStartup * timeFactor), Mathf.Sin(angle * Time.realtimeSinceStartup * timeFactor)) * rotationMultiplier);
 
                 }
-                else if(curEffect == DemoEffect.CIRCLE){
+                else if(curCrabEffect == DemoEffect.CIRCLE){
                     Vector3 newPos = new Vector3(Mathf.Cos(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)) * crabCount, Mathf.Sin(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)) * crabCount, Mathf.Sin(backAndForthMultiplier * angle)) * 0.8f;
                     crabs[i].transform.position = newPos;
 
                 }
-                else if(curEffect == DemoEffect.SINWAVE){
+                else if(curCrabEffect == DemoEffect.SINWAVE){
                     Vector3 newPos = new Vector3((angle - 4) * 2, Mathf.Sin(angle * Mathf.Sin(Time.realtimeSinceStartup)) * 1.5f, Mathf.Sin(backAndForthMultiplier * angle));
                     crabs[i].transform.position = newPos;
+                    crabs[i].transform.Rotate(new Vector3(Mathf.Cos(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)), Mathf.Sin( angle * Time.realtimeSinceStartup * timeFactor), Mathf.Sin(angle * Time.realtimeSinceStartup * timeFactor)) * rotationMultiplier);
+
                 }
+            }
+                    
+        }
+
+        int drillCount = drills.Count;
+        if(drillCount > 0){
+            for (int i = 0; i < drillCount; i++)
+            {
+                    float angle = (i + 1) * Mathf.PI * 2f / drillCount;
+                if(drills[i].transform.localScale.magnitude > new Vector3(1, 1, 1).magnitude){
+                        drills[i].transform.localScale = Vector3.Lerp(drills[i].transform.localScale, new Vector3(1, 1, 1), Time.deltaTime * 3f);
+                }
+
+                Vector3 newPos = new Vector3(Mathf.Cos(angle * Time.realtimeSinceStartup * timeFactor) * drillCount, Mathf.Sin(angle * Time.realtimeSinceStartup * timeFactor) * drillCount, Mathf.Sin(backAndForthMultiplier * angle)) * 0.8f;
+                drills[i].transform.position = newPos;
+                drills[i].transform.Rotate(new Vector3(Mathf.Cos(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)), Mathf.Sin( angle * Time.realtimeSinceStartup * timeFactor), Mathf.Sin(angle * Time.realtimeSinceStartup * timeFactor)) * rotationMultiplier);
+
+                /*if(curEffect == DemoEffect.SINCIRCLE){
+                
+                    Vector3 newPos = new Vector3(Mathf.Cos(angle * Time.realtimeSinceStartup * timeFactor) * drillCount, Mathf.Sin(angle * Time.realtimeSinceStartup * timeFactor) * drillCount, Mathf.Sin(backAndForthMultiplier * angle)) * 0.8f;
+                    drills[i].transform.position = newPos;
+                    drills[i].transform.Rotate(new Vector3(Mathf.Cos(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)), Mathf.Sin( angle * Time.realtimeSinceStartup * timeFactor), Mathf.Sin(angle * Time.realtimeSinceStartup * timeFactor)) * rotationMultiplier);
+
+                }
+                else if(curEffect == DemoEffect.CIRCLE){
+                    Vector3 newPos = new Vector3(Mathf.Cos(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)) * drillCount, Mathf.Sin(angle * Mathf.Sin(Time.realtimeSinceStartup * timeFactor)) * drillCount, Mathf.Sin(backAndForthMultiplier * angle)) * 0.8f;
+                    drills[i].transform.position = newPos;
+
+                }
+                else if(curEffect == DemoEffect.SINWAVE){
+                    Vector3 newPos = new Vector3(Mathf.Sin(angle * Mathf.Sin(Time.realtimeSinceStartup)) * 1.5f, Mathf.Sin(angle * Mathf.Sin(Time.realtimeSinceStartup)) * 1.5f, Mathf.Sin(angle * Mathf.Sin(Time.realtimeSinceStartup)) * 1.5f);
+                    drills[i].transform.position = newPos;
+                }*/
             }
                     
         }
@@ -201,5 +242,13 @@ public class DemoController : MonoBehaviour
 
     public void ExitDemo(){
         Application.Quit();
+    }
+
+    public void RemoveDrills(){
+        foreach (GameObject drill in drills)
+        {
+            Destroy(drill, 0.25f);
+        }
+        drills.Clear();
     }
 }
