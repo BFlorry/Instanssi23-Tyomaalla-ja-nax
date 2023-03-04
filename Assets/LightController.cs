@@ -200,7 +200,7 @@ public class LightController : MonoBehaviour
                         yield return new WaitForSeconds(minWaitTime);
                     }
 
-                    for (int i = flashDownSpeed; i >= 0; i--)
+                    for (int i = flashUpSpeed; i >= 0; i--)
                     {
                         //TODO: laita flashDownWait odotusaika kaikkiin flashdownspeed kohtiin ja laita tilale flashupspeed
                         float brightness = i * 0.01f;
@@ -210,7 +210,7 @@ public class LightController : MonoBehaviour
                             
                         }
                         SendPacket();
-                        yield return new WaitForSeconds(minWaitTime);
+                        yield return new WaitForSeconds(flashDownWait);
                     }
                     break;
             case FlashType.LEFT:
@@ -251,7 +251,7 @@ public class LightController : MonoBehaviour
                         yield return new WaitForSeconds(minWaitTime);
                     }
 
-                    for (int i = flashDownSpeed; i >= 0; i--)
+                    for (int i = flashUpSpeed; i >= 0; i--)
                     {
                         float brightness = i * 0.01f;
                         for (int u = NUM_LIGHTS/2 - 1; u < NUM_LIGHTS - 2; u++)
@@ -260,7 +260,7 @@ public class LightController : MonoBehaviour
                             
                         }
                         SendPacket();
-                        yield return new WaitForSeconds(minWaitTime);
+                        yield return new WaitForSeconds(flashDownWait);
                     }
                     break;
             case FlashType.CLOCKWISE:
@@ -294,13 +294,13 @@ public class LightController : MonoBehaviour
             yield return new WaitForSeconds(minWaitTime);
         }
 
-        for (int i = flashDownSpeed; i >= 0; i--)
+        for (int i = flashUpSpeed; i >= 0; i--)
         {
             float brightness = i * 0.01f;
             SetPacket(index, Mathf.RoundToInt(color.r * brightness), Mathf.RoundToInt(color.g * brightness), Mathf.RoundToInt(color.b * brightness));
                 
             SendPacket();
-            yield return new WaitForSeconds(minWaitTime);
+            yield return new WaitForSeconds(flashDownWait);
         }
     }
 }
